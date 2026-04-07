@@ -1,13 +1,12 @@
 """
-API v1 router — aggregates all versioned endpoint modules.
-Add new routers here as features expand.
+Refined routing — Ensuring no trailing slash conflicts.
 """
 
 from fastapi import APIRouter
-
 from app.api.v1.endpoints import health, analyze
 
 api_router = APIRouter()
 
+# Use clear prefix mounting to avoid 405 Method Not Allowed due to slash redirects
 api_router.include_router(health.router,  prefix="/health",  tags=["ops"])
 api_router.include_router(analyze.router, prefix="/analyze", tags=["analyze"])

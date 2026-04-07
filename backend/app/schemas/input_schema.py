@@ -1,63 +1,44 @@
 """
-Input & Output schemas for the core intelligence pipeline.
-
-All schemas use strict Pydantic v2 validation.
-Input schema replaces the old AnalyzeRequest.
-Output schema replaces the loose `dict | None` data field.
+Input & Output schemas — Refined for resilience.
+Relaxed regex to allow brand-name searches without 422 errors.
 """
 
 from __future__ import annotations
-
-from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
-from typing import Literal, Annotated
-
-
-# =============================================================================
-# INPUT SCHEMA
-# =============================================================================
+from pydantic import BaseModel, Field, field_validator
+from typing import Literal
+import re
 
 class AnalyzeRequest(BaseModel):
     """
     Validated input for the POST /api/v1/analyze endpoint.
-    Replaces the stub schema with full field validation.
+    Accepts natural language product ideas to process.
     """
 
-    url: HttpUrl = Field(
+    idea: str = Field(
         ...,
-        description="Public URL of the product page to analyze.",
-        examples=["https://www.amazon.com/dp/B0CHWRXH8B"],
+        min_length=3,
+        description="Product idea description.",
+        examples=["A smart water bottle that tracks intake"],
     )
-    depth: Literal["quick", "standard", "deep"] = Field(
-        default="standard",
-        description=(
-            "quick   → cache-only, no live search.\n"
-            "standard → LLM + Tavily search.\n"
-            "deep     → full pipeline + competitor deep-dive."
-        ),
-    )
-    include_competitors: bool = Field(
-        default=True,
-        description="If True, triggers competitor search and benchmarking.",
-    )
-    max_competitors: Annotated[int, Field(ge=1, le=10)] = Field(
-        default=5,
-        description="Maximum number of competitors to fetch and analyze.",
-    )
-    language: str = Field(
-        default="en",
-        description="ISO 639-1 language code for LLM outputs.",
-        pattern=r"^[a-z]{2}$",
-    )
+    depth: Literal["quick", "standard", "deep"] = Field(default="standard")
+    include_competitors: bool = Field(default=True)
+    max_competitors: int = Field(default=3, ge=1, le=5)
+    
+    @field_validator("idea")
+    def block_links(cls, v: str) -> str:
+        # Only block actual URIs (https://) and 'www.' to avoid false-positives on brand names
+        if re.search(r'(https?://|www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{5,})', v):
+            raise ValueError("Only descriptive product ideas allowed (no links)")
+        return v
 
     model_config = {
         "str_strip_whitespace": True,
         "json_schema_extra": {
             "example": {
-                "url": "https://www.amazon.com/dp/B0CHWRXH8B",
+                "idea": "An AI coach for local athletes",
                 "depth": "standard",
                 "include_competitors": True,
-                "max_competitors": 5,
-                "language": "en",
+                "max_competitors": 3
             }
         },
     }

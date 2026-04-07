@@ -15,8 +15,8 @@ describe("InputPanel UI", () => {
   beforeEach(() => {
     mockAnalyze = vi.fn();
     (useAnalyzeStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      url: "",
-      setUrl: vi.fn(),
+      idea: "",
+      setIdea: vi.fn(),
       depth: "standard",
       setDepth: vi.fn(),
       includeCompetitors: true,
@@ -29,7 +29,7 @@ describe("InputPanel UI", () => {
 
   it("renders input correctly with accessible aria-label", () => {
     render(<InputPanel />);
-    const input = screen.getByLabelText(/Product URL to analyze/i);
+    const input = screen.getByLabelText(/Product Idea to analyze/i);
     expect(input).toBeInTheDocument();
     expect(input).toBeEnabled();
   });
@@ -37,11 +37,11 @@ describe("InputPanel UI", () => {
   it("submits debounced value on button click", async () => {
     render(<InputPanel />);
     const user = userEvent.setup();
-    const input = screen.getByLabelText(/Product URL to analyze/i);
+    const input = screen.getByLabelText(/Product Idea to analyze/i);
     const button = screen.getByRole("button", { name: /Analyze Product/i });
     
-    await user.type(input, "https://testproduct.com/item");
-    expect(input).toHaveValue("https://testproduct.com/item");
+    await user.type(input, "wireless gaming mouse");
+    expect(input).toHaveValue("wireless gaming mouse");
 
     await user.click(button);
     expect(mockAnalyze).toHaveBeenCalledTimes(1);
@@ -49,8 +49,8 @@ describe("InputPanel UI", () => {
 
   it("renders loading state gracefully", () => {
     (useAnalyzeStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      url: "",
-      setUrl: vi.fn(),
+      idea: "",
+      setIdea: vi.fn(),
       status: "loading",
       errorMessage: null,
       analyze: mockAnalyze,
@@ -62,14 +62,14 @@ describe("InputPanel UI", () => {
 
   it("shows error UI on failure", () => {
     (useAnalyzeStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      url: "",
-      setUrl: vi.fn(),
+      idea: "",
+      setIdea: vi.fn(),
       status: "error",
-      errorMessage: "Provided link unreachable.",
+      errorMessage: "Provided idea unclear.",
       analyze: mockAnalyze,
     });
 
     render(<InputPanel />);
-    expect(screen.getByText(/Provided link unreachable./i)).toBeInTheDocument();
+    expect(screen.getByText(/Provided idea unclear./i)).toBeInTheDocument();
   });
 });

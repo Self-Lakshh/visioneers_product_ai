@@ -1,0 +1,12 @@
+{
+  "name": "visioneers-product-ai-root",
+  "version": "1.0.0",
+  "description": "Monorepo Dev Script",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"cd backend && uvicorn app.main:app --reload --port 8000\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,68 +1,40 @@
-// Frontend representation of the backend schemas
+// Frontend representation of the simplified backend schemas (April 2026)
 
 export type SearchDepth = "quick" | "standard" | "deep";
 
 export interface AnalyzeRequest {
-  url: string;
+  idea: string;
   depth?: SearchDepth;
   include_competitors?: boolean;
   max_competitors?: number;
-  language?: string;
 }
 
-export interface ProductSummary {
+export interface CompetitorItem {
   name: string;
-  brand: string;
-  category: string;
-  price_usd: number | null;
+  tagline: string;
+  delivery_claim: string;
   key_features: string[];
-  sentiment: "positive" | "neutral" | "negative" | "mixed";
-  confidence_score: number;
-}
-
-export interface Competitor {
-  name: string;
-  url: string;
-  price_usd: number | null;
-  score: number;
   strengths: string[];
   weaknesses: string[];
-  confidence_score: number;
-  match_reasoning: string;
+  url?: string;
+  price_usd?: number | null;
 }
 
-export interface ScoreBreakdown {
-  value_for_money: number;
-  feature_richness: number;
-  market_positioning: number;
-  review_sentiment: number;
-  competitive_edge: number;
-  overall: number;
-}
-
-export interface TradeOff {
-  dimension: string;
-  description: string;
-  severity: "low" | "medium" | "high";
-}
-
-export interface Recommendation {
-  verdict: "strong_buy" | "buy" | "hold" | "avoid";
+export interface MarketInsight {
   summary: string;
+  key_gap: string;
+  recommendation: string;
+  idea_score: number;
+  verdict: string;
   target_audience: string;
   alternatives: string[];
-  confidence_score: number;
   explainability_summary: string;
 }
 
 export interface AnalyzeResult {
-  product: ProductSummary;
-  competitors: Competitor[];
-  scores: ScoreBreakdown;
-  trade_offs: TradeOff[];
-  recommendation: Recommendation;
-  explainability_log: string[];
-  pipeline_meta: Record<string, any>;
+  competitors: CompetitorItem[];
+  market_insight: MarketInsight;
+  product_name?: string;
 }
 
 export interface AnalyzeResponse {

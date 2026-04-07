@@ -6,12 +6,12 @@ describe("useAnalyzeStore (Zustand)", () => {
     // Reset state before each test
     const store = useAnalyzeStore.getState();
     store.reset();
-    store.setUrl("");
+    store.setIdea("");
   });
 
   it("should initialize default state correctly", () => {
     const state = useAnalyzeStore.getState();
-    expect(state.url).toBe("");
+    expect(state.idea).toBe("");
     expect(state.depth).toBe("standard");
     expect(state.includeCompetitors).toBe(true);
     expect(state.maxCompetitors).toBe(5);
@@ -19,12 +19,12 @@ describe("useAnalyzeStore (Zustand)", () => {
     expect(state.result).toBeNull();
   });
 
-  it("should update URL explicitly", () => {
-    useAnalyzeStore.getState().setUrl("https://amazon.com");
-    expect(useAnalyzeStore.getState().url).toBe("https://amazon.com");
+  it("should update idea explicitly", () => {
+    useAnalyzeStore.getState().setIdea("gaming mouse");
+    expect(useAnalyzeStore.getState().idea).toBe("gaming mouse");
   });
 
-  it("should reject analyze attempts missing URL", async () => {
+  it("should reject analyze attempts missing Idea", async () => {
     const store = useAnalyzeStore.getState();
     await store.analyze();
     
