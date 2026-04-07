@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
+from typing import Literal
 
 
 class Settings(BaseSettings):
@@ -20,6 +21,10 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     app_env: str = "development"
 
+    # Logging
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    log_json_format: bool = False  # Set to True in production
+
     # Server
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
@@ -36,15 +41,17 @@ class Settings(BaseSettings):
 
     @property
     def origins_list(self) -> List[str]:
-        return [o.strip() for o in self.allowed_origins.split(",")]
+        """Parse comma-separated ALLOWED_ORIGINS into a proper list."""
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
 
     # Redis
     redis_url: str = "redis://redis:6379/0"
     redis_password: str = ""
 
-    # AI Keys (backend-only, never sent to client)
+    # AI / External API Keys (backend-only, never sent to client)
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    tavily_api_key: str = ""
 
 
 settings = Settings()  # type: ignore[call-arg]

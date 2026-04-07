@@ -1,6 +1,13 @@
+"""
+API v1 router — aggregates all versioned endpoint modules.
+Add new routers here as features expand.
+"""
+
 from fastapi import APIRouter
-from app.api.v1.endpoints import health
+
+from app.api.v1.endpoints import health, analyze
 
 api_router = APIRouter()
 
-api_router.include_router(health.router, prefix="/health", tags=["health"])
+api_router.include_router(health.router,  prefix="/health",  tags=["ops"])
+api_router.include_router(analyze.router, prefix="/analyze", tags=["analyze"])
